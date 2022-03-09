@@ -1,4 +1,5 @@
 ﻿using MegoTravelTest.Logic.ExternalSearches;
+using MegoTravelTest.Models.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MegoTravelTest.Controllers;
@@ -15,21 +16,29 @@ public class ExternalSearchController : ControllerBase
         var searchC = new ExternalSearchC();
         var searchD = new ExternalSearchD();
 
-        var searchTaskC = new Task(() => searchC.Request(randomMin, randomMax));
-        searchTaskC.ContinueWith(t => searchD.Request(randomMin, randomMax));
+        var searchTaskC = new Task<ResultDto>(() => searchC.Request(randomMin, randomMax));
+        var searchTaskD = searchTaskC.ContinueWith(t => searchD.Request(randomMin, randomMax));
 
-        var tasks = new Task[]
+        var tasks = new List<Task<ResultDto>>
         {
-            new Task(() => searchA.Request(randomMin, randomMax)),
-            new Task(() => searchB.Request(randomMin, randomMax)),
+            new Task<ResultDto>(() => searchA.Request(randomMin, randomMax)),
+            new Task<ResultDto>(() => searchB.Request(randomMin, randomMax)),
             searchTaskC
         };
-        Parallel.ForEach(tasks, t =>
+        tasks.ForEach(t =>
         {
-            t.Wait(wait);
             t.Start();
+            t.Wait(wait);
         });
         
-        return Ok("Результат");
+        tasks.Add(searchTaskD);
+        
+        searchTaskD.Wait(wait);
+
+        Task.WhenAll(tasks).Wait();
+
+        var result = new List<ResultDto>(tasks.Select(x => x.Result));
+        
+        return Ok(result);
     }
 }
