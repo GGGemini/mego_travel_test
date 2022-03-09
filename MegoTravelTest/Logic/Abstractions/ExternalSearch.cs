@@ -10,7 +10,7 @@ public abstract class ExternalSearch
     protected string _url;
     private readonly ILogger _logger;
 
-    public ExternalSearch()
+    protected ExternalSearch()
     {
         _logger = LoggerFactory.Create(options => {}).CreateLogger(typeof(ExternalSearch));
     }

@@ -4,6 +4,9 @@ public static class RandomHelper
 {
     public static int GetRandomNumber(int min, int max)
     {
+        if (min > max)
+            throw new Exception("MinValue more than MaxValue");
+        
         return new Random().Next(min, max);
     }
 

@@ -1,6 +1,9 @@
-﻿using MegoTravelTest.Logic.ExternalSearches;
+﻿using MegoTravelTest.Extensions;
+using MegoTravelTest.Helpers;
+using MegoTravelTest.Logic.ExternalSearches;
 using MegoTravelTest.Models.Dtos;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Win32.SafeHandles;
 
 namespace MegoTravelTest.Controllers;
 
@@ -9,36 +12,54 @@ namespace MegoTravelTest.Controllers;
 public class ExternalSearchController : ControllerBase
 {
     [HttpGet("search")]
-    public IActionResult Search(int wait, int randomMin, int randomMax)
+    public async Task<IActionResult> Search(int wait, int randomMin, int randomMax)
     {
-        var searchA = new ExternalSearchA();
-        var searchB = new ExternalSearchB();
-        var searchC = new ExternalSearchC();
-        var searchD = new ExternalSearchD();
-
-        var searchTaskC = new Task<ResultDto>(() => searchC.Request(randomMin, randomMax));
-        var searchTaskD = searchTaskC.ContinueWith(t => searchD.Request(randomMin, randomMax));
-
-        var tasks = new List<Task<ResultDto>>
+        try
         {
-            new Task<ResultDto>(() => searchA.Request(randomMin, randomMax)),
-            new Task<ResultDto>(() => searchB.Request(randomMin, randomMax)),
-            searchTaskC
-        };
-        tasks.ForEach(t =>
+            // проверка пользовательского ввода
+            if (randomMin > randomMax)
+                return BadRequest("RandomMin more than RandomMax");
+            
+            var searchA = new ExternalSearchA();
+            var searchB = new ExternalSearchB();
+            var searchC = new ExternalSearchC();
+            var searchD = new ExternalSearchD();
+
+            var funcs = new Func<ResultDto>[]
+            {
+                () => searchA.Request(randomMin, randomMax),
+                () => searchB.Request(randomMin, randomMax),
+                () => searchC.Request(randomMin, randomMax)
+            };
+            var funcD = () => searchD.Request(randomMin, randomMax);
+
+            var taskList = new List<Task<ResultDto>>();
+
+            foreach (var func in funcs)
+            {
+                var task = new Task<ResultDto>(func);
+
+                var resultDto = TaskHelper.GetResultByTimeout(task, wait);
+
+                taskList.Add(resultDto);
+            }
+            
+            // запускаем функцию D после C
+            var taskC = taskList.Last();
+            var taskD = taskC.ContinueWith(t => TaskHelper.GetResultByTimeout(new Task<ResultDto>(funcD), wait));
+            taskD.Wait();
+
+            // записываем результаты
+            var resultList = new List<ResultDto>();
+            
+            taskList.ForEach(t => resultList.SafeAdd(t.Result));
+            resultList.SafeAdd(taskD.Result.Result);
+
+            return Ok(resultList);
+        }
+        catch (Exception e)
         {
-            t.Start();
-            t.Wait(wait);
-        });
-        
-        tasks.Add(searchTaskD);
-        
-        searchTaskD.Wait(wait);
-
-        Task.WhenAll(tasks).Wait();
-
-        var result = new List<ResultDto>(tasks.Select(x => x.Result));
-        
-        return Ok(result);
+            return BadRequest(e.Message);
+        }
     }
 }
