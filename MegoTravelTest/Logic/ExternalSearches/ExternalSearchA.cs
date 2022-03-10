@@ -3,7 +3,7 @@ using MegoTravelTest.Models.Dtos;
 
 namespace MegoTravelTest.Logic.ExternalSearches;
 
-public class ExternalSearchA : ExternalSearch
+public class ExternalSearchA : ExternalSearchBase
 {
     public ExternalSearchA()
     {

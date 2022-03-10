@@ -2,7 +2,7 @@
 
 namespace MegoTravelTest.Logic.ExternalSearches;
 
-public class ExternalSearchD : ExternalSearch
+public class ExternalSearchD : ExternalSearchBase
 {
     public ExternalSearchD()
     {

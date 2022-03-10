@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MegoTravelTest", "MegoTravelTest\MegoTravelTest.csproj", "{F320D159-781B-4180-BCB9-3B430057BF1B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MegoTravelTest.Tests", "MegoTravelTest.Tests\MegoTravelTest.Tests.csproj", "{9E1F688F-AB84-4988-9DE7-6048C99894C7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{F320D159-781B-4180-BCB9-3B430057BF1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F320D159-781B-4180-BCB9-3B430057BF1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F320D159-781B-4180-BCB9-3B430057BF1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E1F688F-AB84-4988-9DE7-6048C99894C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E1F688F-AB84-4988-9DE7-6048C99894C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E1F688F-AB84-4988-9DE7-6048C99894C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E1F688F-AB84-4988-9DE7-6048C99894C7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,9 +1,18 @@
+using MegoTravelTest.Repositories;
+using MegoTravelTest.Repositories.Base.AppDbContext;
+using MegoTravelTest.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
+// Db connect
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    options.UseSqlite("Data Source = megotravel.db");
+});
 
-// Add services to the container.
+// Repositories
+builder.Services.AddTransient<IExternalSearchRepository, ExternalSearchRepository>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
